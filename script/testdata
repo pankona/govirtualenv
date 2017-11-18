@@ -1,0 +1,40 @@
+#!/bin/bash
+function deactivate() {
+	if [ -n ${GOVENV_OLD_PATH} ]; then
+		PATH=${GOVENV_OLD_PATH}
+		export PATH
+		unset GOVENV_OLD_PATH
+	fi
+
+	if [ -n ${GOVENV_OLD_PS1} ]; then
+		PS1=${GOVENV_OLD_PS1}
+		export PS1
+		unset GOVENV_OLD_PS1
+	fi
+
+	if [ -n ${GOROOT} ]; then
+		unset GOROOT
+	fi
+
+	if [ -n ${GOPATH} ]; then
+		unset GOPATH
+	fi
+
+	unset GOENV_ENABLE
+}
+
+# Activation
+if [ -z "${GOENV_ENABLE+x}" ]; then
+	GOVENV_OLD_PATH=${PATH}
+	GOVENV_OLD_PS1=${PS1}
+
+	GOROOT={{.Goroot}}
+	GOPATH={{.Gopath}}
+
+	PATH=${GOROOT}/bin:${PATH}
+	PS1="({{.Project}}) ${PS1}"
+
+	export PS1 PATH GOROOT GOPATH GOVENV_ENABLE=1
+else
+	echo "Already in the project. First do 'deactivate'"
+fi
