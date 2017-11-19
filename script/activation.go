@@ -9,23 +9,23 @@ import (
 
 const scriptTemplate = `#!/bin/bash
 function deactivate() {
-	if [ -n ${GOVENV_OLD_PATH} ]; then
+	if [ -n "${GOVENV_OLD_PATH}" ]; then
 		PATH=${GOVENV_OLD_PATH}
 		export PATH
 		unset GOVENV_OLD_PATH
 	fi
 
-	if [ -n ${GOVENV_OLD_PS1} ]; then
+	if [ -n "${GOVENV_OLD_PS1}" ]; then
 		PS1=${GOVENV_OLD_PS1}
 		export PS1
 		unset GOVENV_OLD_PS1
 	fi
 
-	if [ -n ${GOROOT} ]; then
+	if [ -n "${GOROOT}" ]; then
 		unset GOROOT
 	fi
 
-	if [ -n ${GOPATH} ]; then
+	if [ -n "${GOPATH}" ]; then
 		unset GOPATH
 	fi
 
