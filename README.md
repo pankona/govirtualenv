@@ -19,15 +19,14 @@ More information about what this tool can do, see **Usage** section below.
 Please install these applications before start installation.
 
 - git
-- bash
-- curl (need for installation)
+- curl (need for installation for Linux/MacOS)
 
 ## How to install 
 
 ### Install to Linux/MacOS
 
 ```bash
-$ bash < < $(curl -s -S -L https://raw.githubusercontent.com/necomeshi/govirtualenv/master/install.sh)
+$ bash < <(curl -s -S -L https://raw.githubusercontent.com/necomeshi/govirtualenv/master/install.sh)
 ```
 
 If above command was success, please follows an instruction which was output after the command.
