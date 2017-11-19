@@ -20,6 +20,8 @@ func main() {
 	subcommands.Register(command.RemoveCommand(), "")
 	subcommands.Register(command.AvailableCommand(), "")
 	subcommands.Register(command.ListCommand(), "")
+	subcommands.Register(command.StartprojectCommand(), "")
+	subcommands.Register(command.ChangeCommand(), "")
 
 	flag.Parse()
 

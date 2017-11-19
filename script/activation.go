@@ -1,11 +1,13 @@
 package script
 
-import "text/template"
-import "os"
-import "path/filepath"
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"text/template"
+)
 
-const scriptTemplate = `
-#!/bin/bash
+const scriptTemplate = `#!/bin/bash
 function deactivate() {
 	if [ -n ${GOVENV_OLD_PATH} ]; then
 		PATH=${GOVENV_OLD_PATH}
@@ -27,34 +29,64 @@ function deactivate() {
 		unset GOPATH
 	fi
 
-	unset GOENV_ENABLE
+	unset GOVENV_PROJECT
+	unset GOVENV_ENABLE
 }
 
 # Activation
-if [ -z "${GOENV_ENABLE+x}" ]; then
+if [ -z "${GOVENV_ENABLE+x}" ]; then
 	GOVENV_OLD_PATH=${PATH}
 	GOVENV_OLD_PS1=${PS1}
 
 	GOROOT={{.GoRoot}}
 	GOPATH={{.GoPath}}
+	GOVENV_PROJECT={{.ProjectName}}
 
 	PATH=${GOROOT}/bin:${PATH}
-	PS1="({{.Project}}) ${PS1}"
+	PS1="(${GOVENV_PROJECT}) ${PS1}"
 
-	export PS1 PATH GOROOT GOPATH GOVENV_ENABLE=1
+	export PS1 PATH GOROOT GOPATH GOVENV_ENABLE=1 GOVENV_PROJECT
 else
 	echo "Already in the project. First do 'deactivate'"
 fi
 `
 
-type goEnv struct {
-	GoRoot  string
-	GoPath  string
-	Project string
+// GoEnv is environment variables
+type GoEnv struct {
+	GoRoot      string
+	GoPath      string
+	ProjectName string
 }
 
-// CreateScript create a new activation script under the path
-func CreateScript(dest, goroot, gopath string) (err error) {
+// New creates empty GoEnv structure
+func New(projectName, goRoot, goPath string) *GoEnv {
+	return &GoEnv{GoRoot: goRoot, GoPath: goPath, ProjectName: projectName}
+}
+
+// NewFromEnvironmentVariables collects virtual
+// environment information from environment variables
+func NewFromEnvironmentVariables() (envVal *GoEnv, err error) {
+	var found bool
+	envVal = &GoEnv{}
+
+	if envVal.GoRoot, found = os.LookupEnv("GOROOT"); !found {
+		return nil, fmt.Errorf("GOROOT is not set")
+	}
+
+	if envVal.GoPath, found = os.LookupEnv("GOPATH"); !found {
+		return nil, fmt.Errorf("GOROOT is not set")
+	}
+
+	if envVal.ProjectName, found = os.LookupEnv("GOVENV_PROJECT"); !found {
+		return nil, fmt.Errorf("GOROOT is not set")
+	}
+
+	return envVal, nil
+}
+
+// CreateScript create new activation script
+// under the GOPATH/config.GovenvProjectScriptDir
+func (goEnv *GoEnv) CreateScript(dest string) (err error) {
 	tmpl := template.New("activate")
 
 	if _, err := tmpl.Parse(scriptTemplate); err != nil {
@@ -67,11 +99,15 @@ func CreateScript(dest, goroot, gopath string) (err error) {
 	}
 	defer fout.Close()
 
-	env := goEnv{goroot, gopath, filepath.Base(gopath)}
-
-	if err := tmpl.Execute(fout, env); err != nil {
+	if err := tmpl.Execute(fout, goEnv); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// IsActivated checks is activated virtual environment or not.
+func IsActivated() bool {
+	_, ok := os.LookupEnv("GOVENV_ENABLE")
+	return ok
 }

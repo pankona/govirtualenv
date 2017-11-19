@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/necomeshi/govirtualenv/config"
 )
 
 func compareFile(expectedFile, actualFile *os.File) (err error) {
@@ -38,7 +37,13 @@ func compareFile(expectedFile, actualFile *os.File) (err error) {
 }
 
 func TestCreateActivationScript(t *testing.T) {
-	if err := CreateScript(".", config.GovenvGoRootsDir, ".", "project"); err != nil {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	env := New("project", wd, wd)
+	if err := env.CreateScript(wd); err != nil {
 		t.Fatal(err)
 	}
 
@@ -48,7 +53,7 @@ func TestCreateActivationScript(t *testing.T) {
 	}
 	defer expectedFile.Close()
 
-	actualFile, err := os.OpenFile("activate", os.O_RDONLY, os.ModePerm)
+	actualFile, err := os.OpenFile(filepath.Join(wd, "activate"), os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,7 +73,9 @@ func teardown() (err error) {
 
 func TestMain(m *testing.M) {
 
-	m.Run()
+	ret := m.Run()
 
 	teardown()
+
+	os.Exit(ret)
 }

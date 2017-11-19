@@ -20,21 +20,23 @@ function deactivate() {
 		unset GOPATH
 	fi
 
-	unset GOENV_ENABLE
+	unset GOVENV_PROJECT
+	unset GOVENV_ENABLE
 }
 
 # Activation
-if [ -z "${GOENV_ENABLE+x}" ]; then
+if [ -z "${GOVENV_ENABLE+x}" ]; then
 	GOVENV_OLD_PATH=${PATH}
 	GOVENV_OLD_PS1=${PS1}
 
-	GOROOT={{.Goroot}}
-	GOPATH={{.Gopath}}
+	GOROOT=/Users/yoshimura/Desktop/goenv/src/github.com/necomeshi/govirtualenv/script
+	GOPATH=/Users/yoshimura/Desktop/goenv/src/github.com/necomeshi/govirtualenv/script
+	GOVENV_PROJECT=project
 
 	PATH=${GOROOT}/bin:${PATH}
-	PS1="({{.Project}}) ${PS1}"
+	PS1="(${GOVENV_PROJECT}) ${PS1}"
 
-	export PS1 PATH GOROOT GOPATH GOVENV_ENABLE=1
+	export PS1 PATH GOROOT GOPATH GOVENV_ENABLE=1 GOVENV_PROJECT
 else
 	echo "Already in the project. First do 'deactivate'"
 fi
