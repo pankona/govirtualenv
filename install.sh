@@ -213,7 +213,7 @@ function Install() {
     fi
 
     echo -n "[3/4] Installing golang govirtualenv builder version:"
-    err=$(InstallGolang)
+    err=$(InstallRequiredVersion)
     if [ ${?} -eq 0 ]; then
         echo "OK"
     else
