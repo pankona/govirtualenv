@@ -97,9 +97,59 @@ $ govirtualenv install go1.9.1
 $ govirtualenv remove go1.9.1
 ```
 
-#### Manage a project specific golang environment(GOROOT, GOPATH)
+### Manage a project specific golang environment(GOROOT, GOPATH)
 
-In preparation....
+#### Start new project
+
+**govirtualenv startproject** command create project directory and some convinient scripts
+
+```bash
+# govirtualenv startproject INSTALLED_GOLANGVERSION PROEJCTNAME
+$ govirtualenv startproject go1.9.1 MyProject
+Project MyProject created.
+
+$ ls -a MyProject
+./        ../       .project/
+
+$ ls -a MyProject/.project/bin
+./        ../       activate
+```
+
+#### Activate / Deactivate  virutal environment (Linux/MacOS)
+
+After executed **govirtualenv startproject** command, 
+following command activates virtual environment.
+
+```bash
+# Activate virtual environment. <ProjectName> is the command argument of startproject.
+$ source <ProjectName>/.project/bin/activate
+
+# Virtual environment is now activated
+(<ProjectName>) $
+```
+
+After above command, GOPATH and GOROOT are set to your environment variables automatically.
+Also, path `${GOROOT}/bin` is also added to your PATH. 
+
+
+If you want to deactivate virutal environment, execute
+
+```bash
+(ProjectName) $ deactivate
+```
+
+#### Change project's GOROOT(golang version)
+
+After activate virutal environment, **govirtualenv change** command 
+changes your project GOROOT's to given golang version.
+
+```bash
+(ProjectName) $ govirtualenv list
+go1.9.5
+go1.7.5
+
+(ProjectName) $ govirtualenv change go1.9.5
+```
 
 ## Author
 
